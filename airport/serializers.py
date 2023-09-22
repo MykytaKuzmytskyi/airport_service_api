@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from airport.models import Airport, AirplaneType, Airplane
+from airport.models import Airport, AirplaneType, Airplane, Route
 
 
 class AirportSerializer(serializers.ModelSerializer):
@@ -38,4 +38,42 @@ class AirplaneListSerializer(AirplaneSerializer):
             "rows",
             "seats_in_row",
             "airplane_type",
+        )
+
+
+class RouteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Route
+        fields = "__all__"
+
+
+class RouteListSerializer(RouteSerializer):
+    source = serializers.CharField(max_length=255, source="source.closets_big_city")
+    destination = serializers.CharField(
+        max_length=255, source="destination.closets_big_city"
+    )
+
+    class Meta:
+        model = Route
+        fields = (
+            "id",
+            "source",
+            "destination",
+            "distance",
+        )
+
+
+class RouteDetailSerializer(RouteSerializer):
+    source = serializers.CharField(max_length=255, source="source.closets_big_city")
+    destination = serializers.CharField(
+        max_length=255, source="destination.closets_big_city"
+    )
+
+    class Meta:
+        model = Route
+        fields = (
+            "id",
+            "source",
+            "destination",
+            "distance",
         )
