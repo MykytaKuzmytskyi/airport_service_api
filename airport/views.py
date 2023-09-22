@@ -1,9 +1,9 @@
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.viewsets import ModelViewSet
 
-from airport.models import Airport, AirplaneType, Airplane, Route
+from airport.models import Airport, AirplaneType, Airplane, Route, Crew
 from airport.serializers import AirportSerializer, AirplaneTypeSerializer, AirplaneSerializer, AirplaneListSerializer, \
-    RouteListSerializer, RouteDetailSerializer, RouteSerializer
+    RouteListSerializer, RouteDetailSerializer, RouteSerializer, CrewSerializer
 
 
 class AirportViewSet(ModelViewSet):
@@ -57,3 +57,9 @@ class RouteViewSet(ModelViewSet):
         if self.action == "list":
             queryset = queryset.select_related("source", "destination")
         return queryset
+
+
+class CrewViewSet(ModelViewSet):
+    queryset = Crew.objects.all()
+    serializer_class = CrewSerializer
+    permission_classes = [IsAdminUser]
