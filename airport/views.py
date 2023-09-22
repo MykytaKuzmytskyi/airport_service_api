@@ -1,9 +1,10 @@
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.viewsets import ModelViewSet
 
-from airport.models import Airport, AirplaneType, Airplane, Route, Crew
+from airport.models import Airport, AirplaneType, Airplane, Route, Crew, Flight
 from airport.serializers import AirportSerializer, AirplaneTypeSerializer, AirplaneSerializer, AirplaneListSerializer, \
-    RouteListSerializer, RouteDetailSerializer, RouteSerializer, CrewSerializer
+    RouteListSerializer, RouteDetailSerializer, RouteSerializer, CrewSerializer, FlightListSerializer, FlightSerializer, \
+    FlightDetailSerializer
 
 
 class AirportViewSet(ModelViewSet):
@@ -63,3 +64,15 @@ class CrewViewSet(ModelViewSet):
     queryset = Crew.objects.all()
     serializer_class = CrewSerializer
     permission_classes = [IsAdminUser]
+
+
+class FlightViewSet(ModelViewSet):
+    queryset = Flight.objects.all()
+    permission_classes = [IsAdminUser]
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return FlightListSerializer
+        if self.action == "retrieve":
+            return FlightDetailSerializer
+        return FlightSerializer
