@@ -80,7 +80,7 @@ class Flight(models.Model):
     def __str__(self):
         return (
             f"From {self.route.source.closets_big_city} to {self.route.destination.closets_big_city}: "
-            f"{self.departure_time} - {self.arrival_time}"
+            f"{self.departure_time.strftime('%m.%d.%Y, %H:%M')} - {self.arrival_time}"
         )
 
 
@@ -91,6 +91,11 @@ class Ticket(models.Model):
         to=Flight, on_delete=models.CASCADE, related_name="tickets"
     )
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="tickets")
+
+    def __str__(self):
+        return (
+            f"{str(self.flight)} (row: {self.row}, seat: {self.seat})"
+        )
 
     @staticmethod
     def validate_ticket(row, seat, airplane, error_to_raise):
