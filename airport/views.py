@@ -129,9 +129,11 @@ class FlightViewSet(ModelViewSet):
         return queryset
 
 
-class OrderViewSet(mixins.ListModelMixin,
-                   mixins.CreateModelMixin,
-                   GenericViewSet, ):
+class OrderViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    GenericViewSet,
+):
     queryset = Order.objects.all()
     permission_classes = [IsAuthenticated]
 

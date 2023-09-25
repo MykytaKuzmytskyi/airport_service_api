@@ -3,7 +3,16 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from airport.models import Airport, AirplaneType, Airplane, Route, Crew, Flight, Ticket, Order
+from airport.models import (
+    Airport,
+    AirplaneType,
+    Airplane,
+    Route,
+    Crew,
+    Flight,
+    Ticket,
+    Order,
+)
 
 
 class AirportSerializer(serializers.ModelSerializer):
@@ -31,7 +40,9 @@ class AirplaneSerializer(serializers.ModelSerializer):
 
 class AirplaneListSerializer(AirplaneSerializer):
     airplane_type = serializers.CharField(
-        max_length=255, source="airplane_type.name", read_only=True,
+        max_length=255,
+        source="airplane_type.name",
+        read_only=True,
     )
 
     class Meta:
