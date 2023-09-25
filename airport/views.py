@@ -1,12 +1,24 @@
 from django.db.models import Count, F
 from rest_framework import mixins
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from airport.models import Airport, AirplaneType, Airplane, Route, Crew, Flight, Order
-from airport.serializers import AirportSerializer, AirplaneTypeSerializer, AirplaneSerializer, AirplaneListSerializer, \
-    RouteListSerializer, RouteDetailSerializer, RouteSerializer, CrewSerializer, FlightListSerializer, FlightSerializer, \
-    FlightDetailSerializer, OrderSerializer, OrderListSerializer
+from airport.serializers import (
+    AirportSerializer,
+    AirplaneTypeSerializer,
+    AirplaneSerializer,
+    AirplaneListSerializer,
+    RouteListSerializer,
+    RouteDetailSerializer,
+    RouteSerializer,
+    CrewSerializer,
+    FlightListSerializer,
+    FlightSerializer,
+    FlightDetailSerializer,
+    OrderSerializer,
+    OrderListSerializer,
+)
 
 
 class AirportViewSet(ModelViewSet):
@@ -46,6 +58,13 @@ class AirplaneViewSet(ModelViewSet):
 class RouteViewSet(ModelViewSet):
     queryset = Route.objects.all()
 
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
+
     def get_serializer_class(self):
         if self.action == "list":
             return RouteListSerializer
@@ -70,7 +89,13 @@ class CrewViewSet(ModelViewSet):
 
 class FlightViewSet(ModelViewSet):
     queryset = Flight.objects.all()
-    permission_classes = [IsAdminUser]
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -103,6 +128,7 @@ class OrderViewSet(mixins.ListModelMixin,
                    mixins.CreateModelMixin,
                    GenericViewSet, ):
     queryset = Order.objects.all()
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)
