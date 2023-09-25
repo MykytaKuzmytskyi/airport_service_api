@@ -76,8 +76,13 @@ class RouteViewSet(ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
+        source = self.request.query_params.get("source")
+
         if self.action == "list":
             queryset = queryset.select_related("source", "destination")
+        if source is not None:
+            queryset = queryset.filter(source__name__icontains=source)
+
         return queryset
 
 
