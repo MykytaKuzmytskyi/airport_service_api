@@ -90,7 +90,9 @@ class Ticket(models.Model):
     flight = models.ForeignKey(
         to=Flight, on_delete=models.CASCADE, related_name="tickets"
     )
-    order = models.ForeignKey(to=Order, on_delete=models.CASCADE, related_name="tickets")
+    order = models.ForeignKey(
+        to=Order, on_delete=models.CASCADE, related_name="tickets"
+    )
 
     def __str__(self):
         return f"{str(self.flight)} (row: {self.row}, seat: {self.seat})"

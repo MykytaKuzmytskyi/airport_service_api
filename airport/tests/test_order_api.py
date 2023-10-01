@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -36,10 +35,12 @@ class AdminAirportApiTests(DataTestCase):
         self.assertEqual(len(res.data[0]["tickets"]), 3)
 
     def test_create_tickets_in_order(self):
-        payload = {"tickets": [
-            {"row": 3, "seat": 3, "flight": 1},
-            {"row": 3, "seat": 4, "flight": 1},
-        ]}
+        payload = {
+            "tickets": [
+                {"row": 3, "seat": 3, "flight": 1},
+                {"row": 3, "seat": 4, "flight": 1},
+            ]
+        }
 
         res = self.client.post(ORDER_URL, payload, format="json")
 
@@ -47,17 +48,20 @@ class AdminAirportApiTests(DataTestCase):
         self.assertEqual(len(self.tickets), 5)
 
     def test_create_ticket_bad_request(self):
-        payload = {"tickets": [
-            {"row": 2, "seat": 25, "flight": 1},
-        ]}
+        payload = {
+            "tickets": [
+                {"row": 2, "seat": 25, "flight": 1},
+            ]
+        }
         res = self.client.post(ORDER_URL, payload, format="json")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(res.exception, True)
 
     def test_validator_tickets(self):
-        payload = {"tickets": [
-            {"row": 1, "seat": 3, "flight": 1},
-        ]}
+        payload = {
+            "tickets": [
+                {"row": 1, "seat": 3, "flight": 1},
+            ]
+        }
         res = self.client.post(ORDER_URL, payload, format="json")
         self.assertEqual(res.exception, True)
-        # print(res.data['tickets'][0]['non_field_errors'][0])

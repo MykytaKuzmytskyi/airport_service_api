@@ -112,9 +112,25 @@ class FlightSerializer(serializers.ModelSerializer):
         )
 
 
+class TicketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = (
+            "id",
+            "row",
+            "seat",
+        )
+
+
+class TicketSeatsSerializer(TicketSerializer):
+    class Meta:
+        model = Ticket
+        fields = ("row", "seat")
+
+
 class FlightListSerializer(FlightSerializer):
-    route = serializers.CharField(source="route.__str__")
-    airplane = serializers.CharField(source="airplane.__str__")
+    route = serializers.StringRelatedField(many=False)
+    airplane = serializers.StringRelatedField(many=False)
     crew = CrewSerializer(many=True)
     tickets_available = serializers.IntegerField(read_only=True)
 
@@ -131,18 +147,30 @@ class FlightListSerializer(FlightSerializer):
         )
 
 
-class TicketSerializer(serializers.ModelSerializer):
+class FlightDetailSerializer(FlightSerializer):
+    route = serializers.StringRelatedField(many=False)
+    airplane = serializers.StringRelatedField(many=False)
+    crew = serializers.StringRelatedField(many=True)
+    tickets_taken = TicketSeatsSerializer(
+        source="tickets",
+        many=True,
+        read_only=True,
+    )
+
     class Meta:
-        model = Ticket
+        model = Flight
         fields = (
-            "id",
-            "row",
-            "seat",
+            "route",
+            "airplane",
+            "departure_time",
+            "arrival_time",
+            "crew",
+            "tickets_taken",
         )
 
 
 class TicketListSerializer(TicketSerializer):
-    flight = FlightSerializer(many=False, read_only=True)
+    flight = FlightDetailSerializer(many=False, read_only=True)
 
     class Meta:
         model = Ticket
@@ -180,34 +208,6 @@ class TicketCreateSerializer(serializers.ModelSerializer):
                 queryset=Ticket.objects.all(), fields=["row", "seat"]
             )
         ]
-
-
-class TicketSeatsSerializer(TicketSerializer):
-    class Meta:
-        model = Ticket
-        fields = ("row", "seat")
-
-
-class FlightDetailSerializer(FlightSerializer):
-    route = serializers.StringRelatedField(many=False)
-    airplane = serializers.StringRelatedField(many=False)
-    crew = serializers.StringRelatedField(many=True)
-    tickets_taken = TicketSeatsSerializer(
-        source="tickets",
-        many=True,
-        read_only=True,
-    )
-
-    class Meta:
-        model = Flight
-        fields = (
-            "route",
-            "airplane",
-            "departure_time",
-            "arrival_time",
-            "crew",
-            "tickets_taken",
-        )
 
 
 class OrderSerializer(serializers.ModelSerializer):
