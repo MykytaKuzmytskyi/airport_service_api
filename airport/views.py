@@ -77,11 +77,11 @@ class RouteViewSet(ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset
         source = self.request.query_params.get("source")
-
-        if self.action == "list":
-            queryset = queryset.select_related("source", "destination")
         if source is not None:
             queryset = queryset.filter(source__name__icontains=source)
+
+        if self.action in ["list", "retrieve"]:
+            queryset = queryset.select_related("source", "destination")
 
         return queryset
 
@@ -114,6 +114,7 @@ class FlightViewSet(ModelViewSet):
         if self.action == "list":
             queryset = (
                 queryset.select_related(
+                    "route",
                     "route__source",
                     "route__destination",
                     "airplane",
@@ -124,6 +125,15 @@ class FlightViewSet(ModelViewSet):
                     tickets_available=F("airplane__rows") * F("airplane__seats_in_row")
                     - Count("tickets")
                 )
+            )
+        elif self.action == "retrieve":
+            queryset = (
+                queryset.select_related(
+                    "route__source",
+                    "route__destination",
+                    "airplane",
+                    "airplane__airplane_type",
+                ).prefetch_related("crew")
             )
 
         return queryset
